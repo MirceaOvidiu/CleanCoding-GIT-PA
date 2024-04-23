@@ -6,13 +6,13 @@ typedef struct Node {
     struct Node *next;
 } NODE;
 
-typedef struct g {
+typedef struct Graph {
     int v;
     int *vis;
     NODE **alst;
 } GPH;
 
-typedef struct s {
+typedef struct Stack {
     int t;
     int scap;
     int *arr;
@@ -26,29 +26,29 @@ NODE *create_node(int v) {
 }
 
 void add_edge(GPH *g, int src, int dest) {
-    NODE *nn = create_node(dest);
-    nn->next = g->alst[src];
-    g->alst[src] = nn;
-    nn = create_node(src);
-    nn->next = g->alst[dest];
-    g->alst[dest] = nn;
+    NODE *nn1 = create_node(dest);
+    nn1->next = g->alst[src];
+    g->alst[src] = nn1;
+
+    NODE *nn2 = create_node(src);
+    nn2->next = g->alst[dest];
+    g->alst[dest] = nn2;
 }
 
-GPH *create_g(int v) {
-    int i;
+GPH *create_graph(int v) {
     GPH *g = malloc(sizeof(GPH));
     g->v = v;
     g->alst = malloc(v * sizeof(NODE *));
     g->vis = malloc(v * sizeof(int));
 
-    for (i = 0; i < v; i++) {
+    for (int i = 0; i < v; i++) {
         g->alst[i] = NULL;
         g->vis[i] = 0;
     }
     return g;
 }
 
-STK *create_s(int scap) {
+STK *create_stack(int scap) {
     STK *s = malloc(sizeof(STK));
     s->arr = malloc(scap * sizeof(int));
     s->t = -1;
@@ -62,70 +62,77 @@ void push(int pshd, STK *s) {
 }
 
 void DFS(GPH *g, STK *s, int v_nr) {
-    NODE *adj_list = g->alst[v_nr];
-    NODE *aux = adj_list;
     g->vis[v_nr] = 1;
     printf("%d ", v_nr);
     push(v_nr, s);
-    while (aux != NULL) {
-        int con_ver = aux->data;
+
+    NODE *adj_list = g->alst[v_nr];
+    while (adj_list != NULL) {
+        int con_ver = adj_list->data;
         if (g->vis[con_ver] == 0)
             DFS(g, s, con_ver);
-        aux = aux->next;
+        adj_list = adj_list->next;
     }
 }
 
-void insert_edges(GPH *g, int edg_nr, int nrv) {
-    int src, dest, i;
-    printf("adauga %d munchii (de la 1 la %d)\n", edg_nr, nrv);
-    for (i = 0; i < edg_nr; i++) {
+void insert_edges(GPH *g, int edg_nr) {
+    int src, dest;
+    printf("Adauga %d muchii:\n", edg_nr);
+    for (int i = 0; i < edg_nr; i++) {
         scanf("%d%d", &src, &dest);
         add_edge(g, src, dest);
     }
 }
 
-void wipe(GPH *g, int nrv) {
-    for (int i = 0; i < nrv; i++) {
+void wipe(GPH *g) {
+    for (int i = 0; i < g->v; i++) {
         g->vis[i] = 0;
     }
 }
 
-void canbe(GPH *g, int nrv, STK *s1, STK *s2) {
-    int *canbe = calloc(5, sizeof(int));
+void can_be_reversed(GPH *g, int nrv, STK *s1, STK *s2) {
+    int *canbe = calloc(nrv, sizeof(int));
+    
     for (int i = 0; i < nrv; i++) {
-        for (int j = 0; j < 5; j++) {
-            DFS(g, s1, i);
-            wipe(g, nrv);
-            DFS(g, s2, j);
-            for (int j = 0; j < nrv; j++)
-                for (int i = 0; i < nrv; i++)
-                    if ((s1->arr[i] == j) && (s2->arr[j] == i))
-                        canbe[j] = 1;
+        DFS(g, s1, i);
+        wipe(g);
+        DFS(g, s2, i);
+        
+        for (int j = 0; j < nrv; j++) {
+            if (s1->arr[j] == i && s2->arr[i] == j) {
+                canbe[j] = 1;
+                break;
+            }
         }
     }
+    
+    printf("Vertices that can be reversed:\n");
+    for (int i = 0; i < nrv; i++) {
+        if (canbe[i])
+            printf("%d ", i);
+    }
+    printf("\n");
+    
+    free(canbe);
 }
 
 int main() {
     int nrv;
     int edg_nr;
-    int src, dest;
-    int i;
-    int vortex_1;
-    int virtex_2;
-    int ans;
 
-    printf("cate noduri are graful?");
+    printf("How many vertices does the graph have? ");
     scanf("%d", &nrv);
 
-    printf("cate muchii are graful?");
+    printf("How many edges does the graph have? ");
     scanf("%d", &edg_nr);
 
-    GPH *g = create_g(nrv);
+    GPH *g = create_graph(nrv);
+    STK *s1 = create_stack(2 * nrv);
+    STK *s2 = create_stack(2 * nrv);
 
-    STK *s1 = create_s(2 * nrv);
-    STK *s2 = create_s(2 * nrv);
+    insert_edges(g, edg_nr);
 
-    insert_edges(g, edg_nr, nrv);
+    can_be_reversed(g, nrv, s1, s2);
 
-    canbe(g, nrv, s1, s2);
+    return 0;
 }
