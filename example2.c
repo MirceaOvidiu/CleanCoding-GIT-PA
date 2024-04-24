@@ -100,7 +100,7 @@ void print_graph(Graph *graph) {
         printf("NULL\n");
     }
 
-void print_queue(NODE *queue){
+void print_queue(Node *queue){
 while (queue != NULL){
   printf("%d ", queue->data);
   queue = *(queue->next)->next;
@@ -108,7 +108,7 @@ while (queue != NULL){
 }
 
 
-void wipe_visited_list(GPH *graph, int nr_of_vertices){
+void wipe_visited_list(Graph *graph, int nr_of_vertices){
 for (int i = 0; 
 i < nr_of_vertices;i++){
   graph->visited[i] = 0;
