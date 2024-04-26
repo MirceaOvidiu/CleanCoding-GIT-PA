@@ -11,11 +11,23 @@ int data;
 struct Node *next;
 } NODE;
 
-typedef struct Graph{ int vertices;int *visited;struct Node **adjacency_lists;} GPH;
+typedef struct Graph
+{ 
+int vertices;
+int *visited;
+struct Node **adjacency_lists;
+} GPH;
 /// utils
                           
 
-NODE *create_node(int v){ NODE *new_node = malloc(sizeof(NODE)); new_node->data = v; new_node->next = NULL;return new_node;}
+NODE *create_node(int v)
+{
+  NODE *new_node = malloc(sizeof(NODE));
+  new_node->data = v;
+  new_node->next = NULL;
+  return new_node;
+}
+
 GPH *create_graph(int vertices)
 {
     int i;
@@ -46,7 +58,11 @@ void add_edge(GPH *graph, int src, int dest)
     graph->adjacency_lists[dest] = new_node;
 }
 
-int *insedg(int nr_of_vertices, int nr_of_edges, GPH *graph){ int src, dest, i; printf("adauga %d muchii (de la 1 la %d)\n", nr_of_edges, nr_of_vertices);
+int *insedg(int nr_of_vertices, int nr_of_edges, GPH *graph)
+{
+int src, dest, i;
+printf("adauga %d muchii (de la 1 la %d)\n", nr_of_edges, nr_of_vertices);
+
 {                                                    
     for (i = 0; i < nr_of_edges; i++)
     {
@@ -78,8 +94,10 @@ else
 {
     NODE *temp = *queue;
     while (temp->next)
-    {temp = temp->next;}temp->next = new_node;
-}
+    {
+      temp = temp->next;}temp->next = new_node;
+    }
+  
 }
 
 int dequeue(NODE **queue)
@@ -101,6 +119,7 @@ void print_graph(GPH *graph)
      printf("%d ", temp->data);
       temp = *(temp->next)->data;
     }
+      
       printf("\n");
     }
 }
@@ -108,21 +127,23 @@ void print_graph(GPH *graph)
 void print_queue(NODE *queue)
 {
   
-while (queue != NULL)
-{printf("%d ", queue->data);
- queue = *(queue->next)->next;
-}
+     while (queue != NULL)
+   {
+      printf("%d ", queue->data);
+      queue = *(queue->next)->next;
+   }
 }
 
 
 void wipe_visited_list(GPH *graph, int nr_of_vertices)
 {
   
-for (int i = 0; i < nr_of_vertices; i++)
-{
-graph->visited[i] = 0;
+       for (int i = 0; i < nr_of_vertices; i++)
+      {
+         graph->visited[i] = 0;
+      }
 }
-}
+
 // parcurgeri
 void DFS(GPH *graph, int vertex_nr)
 {
@@ -170,6 +191,7 @@ void BFS(GPH *graph, int start)
             graph->visited[adj_vertex] = 1;
             enqueue(&*queue, adj_vertex);
             }
+         
        temp = temp->next;
         }
     }
