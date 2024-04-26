@@ -1,111 +1,111 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Define a node structure for adjacency list
-typedef struct Node {
+// Definiți o structură de nod pentru lista de adiacență
+typedef struct Nod {
     int data;
-    struct Node *next;
-} Node;
+    struct Nod *next;
+} Nod;
 
-// Define a graph structure
-typedef struct Graph {
-    int vertices;
-    int *visited;
-    Node **adjacency_lists;
-} Graph;
+// Definiți o structură de graf
+typedef struct Graf {
+    int varfuri;
+    int *vizitat;
+    Nod **liste_adiacente;
+} Graf;
 
-// Function prototypes
-Node *create_node(int v);
-Graph *create_graph(int vertices);
-void add_edge(Graph *graph, int src, int dest);
-void input_edges(int nr_of_vertices, int nr_of_edges, Graph *graph);
-int is_empty(Node *queue);
-void enqueue(Node **queue, int data);
-int dequeue(Node **queue);
-void print_graph(Graph *graph);
-void print_queue(Node *queue);
-void reset_visited(Graph *graph, int nr_of_vertices);
-void DFS(Graph *graph, int vertex);
-void BFS(Graph *graph, int start);
+// Prototipurile funcțiilor
+Nod *creare_nod(int v);
+Graf *creare_graf(int varfuri);
+void adauga_muchie(Graf *graf, int src, int dest);
+void introduceti_muchii(int nr_varfuri, int nr_muchii, Graf *graf);
+int este_gol(Nod *coada);
+void adauga_in_coada(Nod **coada, int data);
+int extrage_din_coada(Nod **coada);
+void afiseaza_graf(Graf *graf);
+void afiseaza_coada(Nod *coada);
+void resetare_vizitate(Graf *graf, int nr_varfuri);
+void DFS(Graf *graf, int varf);
+void BFS(Graf *graf, int start);
 
-// Function to create a new node
-Node *create_node(int v) {
-    Node *new_node = malloc(sizeof(Node));
-    new_node->data = v;
-    new_node->next = NULL;
-    return new_node;
+// Funcție pentru a crea un nou nod
+Nod *creare_nod(int v) {
+    Nod *nod_nou = malloc(sizeof(Nod));
+    nod_nou->data = v;
+    nod_nou->next = NULL;
+    return nod_nou;
 }
 
-// Function to create a graph with given number of vertices
-Graph *create_graph(int vertices) {
+// Funcție pentru a crea un graf cu numărul dat de varfuri
+Graf *creare_graf(int varfuri) {
     int i;
-    Graph *graph = malloc(sizeof(Graph));
-    graph->vertices = vertices;
-    graph->adjacency_lists = malloc(vertices * sizeof(Node *));
-    graph->visited = malloc(sizeof(int) * vertices);
+    Graf *graf = malloc(sizeof(Graf));
+    graf->varfuri = varfuri;
+    graf->liste_adiacente = malloc(varfuri * sizeof(Nod *));
+    graf->vizitat = malloc(sizeof(int) * varfuri);
 
-    for (i = 0; i < vertices; i++) {
-        graph->adjacency_lists[i] = NULL;
-        graph->visited[i] = 0;
+    for (i = 0; i < varfuri; i++) {
+        graf->liste_adiacente[i] = NULL;
+        graf->vizitat[i] = 0;
     }
-    return graph;
+    return graf;
 }
 
-// Function to add an edge to the graph
-void add_edge(Graph *graph, int src, int dest) {
-    Node *new_node = create_node(dest);
-    new_node->next = graph->adjacency_lists[src];
-    graph->adjacency_lists[src] = new_node;
+// Funcție pentru a adăuga o muchie la graf
+void adauga_muchie(Graf *graf, int src, int dest) {
+    Nod *nod_nou = creare_nod(dest);
+    nod_nou->next = graf->liste_adiacente[src];
+    graf->liste_adiacente[src] = nod_nou;
 
-    new_node = create_node(src);
-    new_node->next = graph->adjacency_lists[dest];
-    graph->adjacency_lists[dest] = new_node;
+    nod_nou = creare_nod(src);
+    nod_nou->next = graf->liste_adiacente[dest];
+    graf->liste_adiacente[dest] = nod_nou;
 }
 
-// Function to input edges of the graph
-void input_edges(int nr_of_vertices, int nr_of_edges, Graph *graph) {
+// Funcție pentru a introduce muchiile grafului
+void introduceti_muchii(int nr_varfuri, int nr_muchii, Graf *graf) {
     int src, dest, i;
-    printf("Add %d edges (from 1 to %d)\n", nr_of_edges, nr_of_vertices);
-    for (i = 0; i < nr_of_edges; i++) {
+    printf("Adăugați %d muchii (de la 1 la %d)\n", nr_muchii, nr_varfuri);
+    for (i = 0; i < nr_muchii; i++) {
         scanf("%d %d", &src, &dest);
-        add_edge(graph, src, dest);
+        adauga_muchie(graf, src, dest);
     }
 }
 
-// Function to check if the queue is empty
-int is_empty(Node *queue) {
-    return queue == NULL;
+// Funcție pentru a verifica dacă coada este goală
+int este_gol(Nod *coada) {
+    return coada == NULL;
 }
 
-// Function to add an element to the queue
-void enqueue(Node **queue, int data) {
-    Node *new_node = create_node(data);
-    if (is_empty(*queue)) {
-        *queue = new_node;
+// Funcție pentru a adăuga un element în coadă
+void adauga_in_coada(Nod **coada, int data) {
+    Nod *nod_nou = creare_nod(data);
+    if (este_gol(*coada)) {
+        *coada = nod_nou;
     } else {
-        Node *temp = *queue;
+        Nod *temp = *coada;
         while (temp->next) {
             temp = temp->next;
         }
-        temp->next = new_node;
+        temp->next = nod_nou;
     }
 }
 
-// Function to remove an element from the queue
-int dequeue(Node **queue) {
-    int data = (*queue)->data;
-    Node *temp = *queue;
-    *queue = (*queue)->next;
+// Funcție pentru a elimina un element din coadă
+int extrage_din_coada(Nod **coada) {
+    int data = (*coada)->data;
+    Nod *temp = *coada;
+    *coada = (*coada)->next;
     free(temp);
     return data;
 }
 
-// Function to print the graph
-void print_graph(Graph *graph) {
+// Funcție pentru a afișa graficul
+void afiseaza_graf(Graf *graf) {
     int i;
-    for (i = 0; i < graph->vertices; i++) {
-        printf("Vertex %d: ", i);
-        Node *temp = graph->adjacency_lists[i];
+    for (i = 0; i < graf->varfuri; i++) {
+        printf("Varful %d: ", i);
+        Nod *temp = graf->liste_adiacente[i];
         while (temp) {
             printf("%d ", temp->data);
             temp = temp->next;
@@ -114,44 +114,44 @@ void print_graph(Graph *graph) {
     }
 }
 
-// Function to reset visited list
-void reset_visited(Graph *graph, int nr_of_vertices) {
-    for (int i = 0; i < nr_of_vertices; i++) {
-        graph->visited[i] = 0;
+// Funcție pentru a reseta lista vizitată
+void resetare_vizitate(Graf *graf, int nr_varfuri) {
+    for (int i = 0; i < nr_varfuri; i++) {
+        graf->vizitat[i] = 0;
     }
 }
 
-// Depth First Search
-void DFS(Graph *graph, int vertex) {
-    graph->visited[vertex] = 1;
-    printf("%d -> ", vertex);
+// Căutare în adâncime
+void DFS(Graf *graf, int varf) {
+    graf->vizitat[varf] = 1;
+    printf("%d -> ", varf);
 
-    Node *temp = graph->adjacency_lists[vertex];
+    Nod *temp = graf->liste_adiacente[varf];
     while (temp != NULL) {
-        int connected_vertex = temp->data;
-        if (graph->visited[connected_vertex] == 0) {
-            DFS(graph, connected_vertex);
+        int varf_adiacent = temp->data;
+        if (graf->vizitat[varf_adiacent] == 0) {
+            DFS(graf, varf_adiacent);
         }
         temp = temp->next;
     }
 }
 
-// Breadth First Search
-void BFS(Graph *graph, int start) {
-    Node *queue = NULL;
-    graph->visited[start] = 1;
-    enqueue(&queue, start);
+// Căutare în lățime
+void BFS(Graf *graf, int start) {
+    Nod *coada = NULL;
+    graf->vizitat[start] = 1;
+    adauga_in_coada(&coada, start);
 
-    while (!is_empty(queue)) {
-        int current = dequeue(&queue);
-        printf("%d ", current);
+    while (!este_gol(coada)) {
+        int curent = extrage_din_coada(&coada);
+        printf("%d ", curent);
 
-        Node *temp = graph->adjacency_lists[current];
+        Nod *temp = graf->liste_adiacente[curent];
         while (temp) {
-            int adj_vertex = temp->data;
-            if (graph->visited[adj_vertex] == 0) {
-                graph->visited[adj_vertex] = 1;
-                enqueue(&queue, adj_vertex);
+            int varf_adiacent = temp->data;
+            if (graf->vizitat[varf_adiacent] == 0) {
+                graf->vizitat[varf_adiacent] = 1;
+                adauga_in_coada(&coada, varf_adiacent);
             }
             temp = temp->next;
         }
@@ -159,28 +159,28 @@ void BFS(Graph *graph, int start) {
 }
 
 int main() {
-    int nr_of_vertices, nr_of_edges, starting_vertex;
+    int nr_varfuri, nr_muchii, varf_start;
 
-    printf("How many vertices does the graph have? ");
-    scanf("%d", &nr_of_vertices);
+    printf("Câte varfuri are graficul? ");
+    scanf("%d", &nr_varfuri);
 
-    printf("How many edges does the graph have? ");
-    scanf("%d", &nr_of_edges);
+    printf("Câte muchii are graficul? ");
+    scanf("%d", &nr_muchii);
 
-    Graph *graph = create_graph(nr_of_vertices);
-    input_edges(nr_of_vertices, nr_of_edges, graph);
+    Graf *graf = creare_graf(nr_varfuri);
+    introduceti_muchii(nr_varfuri, nr_muchii, graf);
 
-    printf("Where to start DFS? ");
-    scanf("%d", &starting_vertex);
-    printf("DFS traversal: ");
-    DFS(graph, starting_vertex);
-    reset_visited(graph, nr_of_vertices);
+    printf("De unde să înceapă DFS? ");
+    scanf("%d", &varf_start);
+    printf("Parcurgere DFS: ");
+    DFS(graf, varf_start);
+    resetare_vizitate(graf, nr_varfuri);
     printf("\n");
 
-    printf("Where to start BFS? ");
-    scanf("%d", &starting_vertex);
-    printf("BFS traversal: ");
-    BFS(graph, starting_vertex);
+    printf("De unde să înceapă BFS? ");
+    scanf("%d", &varf_start);
+    printf("Parcurgere BFS: ");
+    BFS(graf, varf_start);
 
     return 0;
 }
