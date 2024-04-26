@@ -97,6 +97,7 @@ printf("Adauga %d muchii (de la 0 la %d)\n", nr_of_edges, nr_of_vertices - 1); /
       add_edge(graph, src, dest);
     }
 }
+}
 /// bfs utils
 
 /* int is_empty(NODE *queue)
@@ -189,14 +190,15 @@ void print_graph(GPH *graph)
     }
 }
 
-void print_queue(NODE *queue)  //Nu cred ca trebuie neaparat
+void print_queue(NODE *queue) 
 {
-  
-     while (queue != NULL)
-   {
-      printf("%d ", queue->data);
-      queue = *(queue->next)->next;
-   }
+
+    while (queue != NULL)
+     {
+        printf("%d ", queue->data);
+        queue = queue->next;
+    }
+    printf("\n");
 }
 
 
