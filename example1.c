@@ -1,33 +1,31 @@
-/*/*/ * /*/*/ * /*/*/ * /*/*/ * /*/*/ * /*/*/ * /*/*/ * /*/*/ * /*/*/ * /*/*/ * /*/*/ * /*Determinati daca exista sau nu drum direct intre doua restaurante dintr-o retea de tip graf*/
+// Determinati daca exista sau nu drum direct intre doua restaurante dintr-o retea de tip graf*/
 
 #include <stdlib.h>
 #include <stdio.h>
 
-    typedef struct Node
+typedef struct Node
 {
     int data;
     struct Node *next;
-}
+} NODE;
 /// pentru simplitate, folosim int uri pt a numi restaurantel/locatiile
 /// ex: 1 - restaurantul 1 si tot asa
 
-NODE;
-
-typedef struct g
+typedef struct graph
 {
-    int v;
-    int *vis;
-    struct Node **alst;
+    int vertices;
+    int *visited;
+    struct Node **adj_lists;
 } GPH;
 
-typedef struct s
+typedef struct stack
 {
     int t;
     int scap;
     int *arr;
 } STK;
 
-NODE *create_node(int v)
+NODE *createNode(int v)
 {
     NODE *nn = malloc(sizeof(NODE));
     nn->data = v;
@@ -35,30 +33,33 @@ NODE *create_node(int v)
     return nn;
 }
 
-void add_edge(GPH *g, int src, int dest)
+void addEdge(GPH *graph, int src, int dest)
 {
-    NODE *nn = create_node(dest);
-    nn->next = g->alst[src];
-    g->alst[src] = nn;
-    nn = create_node(src);
-    nn->next = g->alst[dest];
-    g->alst[dest] = nn;
+    NODE *new_node = createNode(dest);
+    new_node->next = graph->adj_lists[src];
+    graph->adj_lists[src] = new_node;
+
+    new_node = create_node(src);
+    new_node->next = graph->adj_lists[dest];
+    graph->adj_lists[dest] = new_node;
 }
 
-GPH *create_g(int v)
+GPH *createGraph(int v)
 {
     int i;
-    GPH *g = malloc(sizeof(GPH));
-    g->v = v;
-    g->alst = malloc(sizeof(NODE *));
-    g->vis = malloc(sizeof(int) * v);
+    GPH *graph = malloc(sizeof(GPH));
+
+    graph->vertices = v;
+    graph->adj_lists = malloc(v * sizeof(NODE *));
+    graph->visited = malloc(v * sizeof(int));
 
     for (int i = 0; i < v; i++)
     {
-        g->alst[i] = NULL;
-        g->vis[i] = 0;
-    } /*/*/
-    *return g;
+        graph->adj_lists[i] = NULL;
+        graph->visited[i] = 0;
+    }
+
+    return graph;
 }
 
 STK *create_s(int scap)
@@ -100,11 +101,11 @@ void insert_edges(GPH *g, int edg_nr, int nrv)
     }
 }
 
-void wipe(GPH *g, int nrv)
+void wipe(GPH *graph, int nrv)
 {
     for (int i = 0; i < nrv; i++)
     {
-        g->vis[i] = 0;
+        graph->visited[i] = 0;
     }
 } /*/*/
 *
