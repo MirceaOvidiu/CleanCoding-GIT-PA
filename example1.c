@@ -15,7 +15,7 @@ typedef struct graph
 {
     int vertices;
     int *visited;
-    struct Node **adj_lists;
+    NODE **adj_lists;
 } GPH;
 
 typedef struct stack
@@ -79,16 +79,17 @@ void push(int pushedItem, STK *stack)
     stack->array[stack->top] = pushedItem;
 }
 
-void DFS(GPH *graph, STK *stack, int v_nr)
+void DFS(GPH *graph, STK *stack, int vertex_nr)
 {
-    push(v_nr, stack);
-    NODE *temp = graph->adj_lists[v_nr];
+    push(vertex_nr, stack);
+    NODE *temp = graph->adj_lists[vertex_nr];
 
-    graph->visited[v_nr] = 1;
+    graph->visited[vertex_nr] = 1;
 
     while (temp != NULL)
     {
         int connected_vertex = temp->data;
+
         if (graph->visited[connected_vertex] == 0)
         {
             DFS(graph, stack, connected_vertex);
@@ -97,41 +98,51 @@ void DFS(GPH *graph, STK *stack, int v_nr)
     }
 }
 
-void insertEdges(GPH *graph, int nr_edg, int nr_v)
+void insertEdges(GPH *graph, int nr_of_vertices, int nr_of_edges)
 {
     int src, dest, i;
-    printf("Adauga %d munchii (de la 1 la %d)\n", nr_edg, nr_v);
-
-    for (i = 0; i < nr_edg; i++)
+    printf("Adauga %d muchii (pentru noduri de la 0 la %d)\n", nr_of_edges, nr_of_vertices - 1);
+    for (i = 0; i < nr_of_edges; i++)
     {
         scanf("%d%d", &src, &dest);
         addEdge(graph, src, dest);
     }
 }
 
-void wipe(GPH *graph, int nr_v)
+void wipeVisitedList(GPH *graph, int nr_of_vertices)
 {
-    for (int i = 0; i < nr_v; i++)
+    for (int i = 0; i < nr_of_vertices; i++)
     {
         graph->visited[i] = 0;
     }
 }
 
-void canBeEdge(GPH *graph, int nr_v, STK *stack1, STK *stack2) // 0 sau 1 daca poate fi sau nu ajuns
+void canBeEdge(GPH *graph, int nr_of_vertices, int canbe[100][100])
 {
-    int *canbe = calloc(nr_v, sizeof(int));
-
-    for (int i = 0; i < nr_v; i++) // aici i tine loc de numar adica de restaurant{for (int j = 0; j < 5; j++)
+    for (int i = 0; i < nr_of_vertices; i++)
     {
-        for (int j = 0; j < nr_v; j++)
+        for (int j = 0; j < nr_of_vertices; j++)
         {
-            DFS(graph, stack1, i);
-            wipe(graph, nr_v);
-            DFS(graph, stack2, j);
-
-            if ((stack1->array[i] == j) && (stack2->array[j] == i))
+            if (i != j)
             {
-                canbe[i] = 1;
+                STK *stack1 = createStack(2 * nr_of_vertices);
+                STK *stack2 = createStack(2 * nr_of_vertices);
+
+                DFS(graph, stack1, i);
+                wipeVisitedList(graph, nr_of_vertices);
+                DFS(graph, stack2, j);
+
+                if (graph->visited[i] && graph->visited[j])
+                {
+                    canbe[i][j] = 1;
+                }
+                else
+                {
+                    canbe[i][j] = 0;
+                }
+
+                free(stack1);
+                free(stack2);
             }
         }
     }
@@ -140,36 +151,33 @@ void canBeEdge(GPH *graph, int nr_v, STK *stack1, STK *stack2) // 0 sau 1 daca p
 int main()
 {
 
-    int nr_v;
-    int nr_edg;
-    int src, dest;
-    int i;
+    int nr_of_vertices;
+    int nr_of_edges;
     int vertex1;
     int vertex2;
-    int canbe[100];
+    int canbe[100][100];
 
     printf("Cate noduri are graful?");
-    scanf("%d", &nr_v);
+    scanf("%d", &nr_of_vertices);
 
     printf("Cate muchii are graful?");
-    scanf("%d", &nr_edg);
+    scanf("%d", &nr_of_edges);
+
+    GPH *graph = createGraph(nr_of_vertices);
+
+    insertEdges(graph, nr_of_vertices, nr_of_edges);
 
     printf("Intre ce noduri vreti sa verificati daca exista drum: ");
     scanf("%d%d", &vertex1, &vertex2);
 
-    GPH *graph = createGraph(nr_v);
+    canBeEdge(graph, nr_of_vertices, canbe);
 
-    STK *stack1 = createStack(2 * nr_v);
-    STK *stack2 = createStack(2 * nr_v);
-
-    insertEdges(graph, nr_edg, nr_v);
-
-    canBeEdge(graph, nr_v, stack1, stack2);
-
-    if (canbe[vertex1] == canbe[vertex2] == 1)
+    if (canbe[vertex1][vertex2] == 1 && canbe[vertex2][vertex1] == 1)
     {
-        printf("printf exista drum");
+        printf("Exista drum intre restaurantul %d si restaurantul %d.", vertex1, vertex2);
     }
     else
-        printf("nu exista");
+    {
+        printf("Nu exista drum intre aceste doua restaurante.");
+    }
 }
