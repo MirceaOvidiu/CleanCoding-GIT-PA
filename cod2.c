@@ -186,7 +186,7 @@ int main()
     scanf("%d", &nr_of_edges);
 
     GRAPH *graph = create_graph(nr_of_vertices);
-    insedg(nr_of_edges, graph);
+    insert_edge(nr_of_edges, graph);
 
     printf("De unde plecam in DFS? ");
     scanf("%d", &starting_vertex);
