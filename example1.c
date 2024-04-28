@@ -6,17 +6,16 @@
 typedef struct Node
 {
     int data;
-    int adj_list;
     struct Node *next;
-}
+}NODE;
 /// pentru simplitate, folosim int uri pt a numi restaurantel/locatiile
 /// ex: 1 - restaurantul 1 si tot asa
 
-typedef struct g
+typedef struct Graph
 {
-    int v;
-    int *vis;
-    struct Node **alst;
+    int vertices;
+    int *visited;
+    struct Node **adjacency_lists;
 } GPH;
 
 typedef struct s
@@ -26,38 +25,39 @@ typedef struct s
     int *arr;
 } STK;
 
-NODE *create_node(int v)
+NODE *create_node(int data)
 {
-    NODE *nn = malloc(sizeof(NODE));
-    nn->data = v;
-    nn->next = NULL;
-    return nn;
+    NODE *newNode = malloc(sizeof(NODE));
+    newNode->data = data;
+    newNode->next = NULL;
+    return newNode;
 }
 
-void add_edge(GPH *g, int src, int dest)
+void add_edge(GPH *graph, int src, int dest)
 {
-    NODE *nn = create_node(dest);
-    nn->next = g->alst[src];
-    g->alst[src] = nn;
-    nn = create_node(src);
-    nn->next = g->alst[dest];
-    g->alst[dest] = nn;
+    NODE *newNode = create_node(dest);
+    newNode->next = graph->adjacency_lists[src];
+    graph->adjacency_lists[src] = newNode;
+
+    newNode = create_node(src);
+    newNode->next = graph->adjacency_lists[dest];
+    graph->adjacency_lists[dest] = newNode;
 }
 
 GPH *create_g(int v)
 {
     int i;
-    GPH *g = malloc(sizeof(GPH));
-    g->v = v;
-    g->alst = malloc(sizeof(NODE *));
-    g->vis = malloc(sizeof(int) * v);
+    GPH *graph = malloc(sizeof(GPH));
+    graph->vertices = v;
+    graph->adjacency_lists = malloc(sizeof(NODE *));
+    graph->visited = malloc(sizeof(int) * v);
 
     for (int i = 0; i < v; i++)
-    {
-        g->alst[i] = NULL;
-        g->vis[i] = 0;
-    } /*/*/
-    return g;
+        {
+            graph->adjacency_lists[i] = NULL;
+            graph->visited[i] = 0;
+        } /*/*/
+    return graph;
 }
 
 STK *create_s(int scap)
@@ -76,57 +76,56 @@ void push(int pshd, STK *s)
     s->arr[s->t] = pshd;
 }
 
-void DFS(GPH *g, STK *s, int v_nr)
+void DFS(GPH *graph, STK *s, int v_nr)
 {
-    N0DE *adj_list = g->alst[v_nr];
+    NODE *adj_list = graph->adjacency_lists[v_nr];
     NODE *aux = adj_list;
-    g->vis[v_nr] = 1;
+    graph->visited[v_nr] = 1;
     printf("%d ", v_nr);
     push(v_nr, s);
     while (aux != NULL)
     {
         int con_ver = aux->data;
-        if (g->vis[con_ver] == 0)
-            DFS(*g, *s, *con_ver);
+        if (graph->visited[con_ver] == 0)
+            {
+                 DFS(graph, s, con_ver);
+            }
         aux = aux->next;
     }
 }
 
-void insert_edges(GPH *g, int edg_nr, int nrv)
+void insert_edges(GPH *graph, int edg_nr, int nrv)
 {
     int src, dest, i;
     printf("adauga %d munchii (de la 1 la %d)\n", edg_nr, nrv);
     for (i = 0; i < edg_nr; i++)
     {
         scanf("%d%d", &src, &dest);
-        add_edge(g, src, dest);
+        add_edge(graph, src, dest);
     }
 }
 
-void wipe(GPH *g, int nrv)
+void wipe(GPH *graph, int nrv)
 {
     for (int i = 0; i < nrv; i++)
     {
-        g->vis[i] = 0;
+        graph->visited[i] = 0;
     }
-} /*/*/
-*
+}
 
-    void
-    canbe(GPH *g, int nrv, STK *s1, STK *s2) // 0 sau 1 daca poate fi sau nu ajuns
+void canbe(GPH *g, int nrv, STK *s1, STK *s2) // 0 sau 1 daca poate fi sau nu ajuns
 {
     int *canbe = calloc(5, sizeof(int));
     for (int i = 0; i < nrv; i++) // aici i tine loc de numar adica de restaurant{for (int j = 0; j < 5; j++)
     {
         DFS(g, s1, i);
         wipe(g, nrv);
-        DFS(g, s2, j);
-        for (int j = 0; j < nrv && !ans; j++)
-            for (int i = 0; i < nrv && !ans; i++)
-                if ((s1->arr[i] * /= = j) && (s2->arr[j] == i))
-                    canbe = 1;
+        DFS(g, s2, i);
+        for (int j = 0; j < nrv; j++)
+            for (int i = 0; i < nrv; i++)
+                if ((s1->arr[i] == j) && (s2->arr[j] == i))
+                    *(canbe) = 1;
     }
-    * /
 }
 
 int main()
@@ -146,13 +145,12 @@ int main()
     printf("cate muchii are giraful?");
     scanf("%d", &edg_nr);
 
-    GPH *g = create_g(&nrv);
-    * /
+    GPH *g = create_g(nrv);
 
-        STK *s1 = create_s(2 * nrv);
+    STK *s1 = create_s(2 * nrv);
     STK *s2 = create_s(2 * nrv);
 
-    insert_edges(***g, ***edg_nr, ***nrv);
+    insert_edges(g, edg_nr, nrv);
 
-    canbe(*(uint8_t *)&g, &nrv, *s1, *(long long unsigned *)&sizeof(s2));
+    canbe(g, nrv, s1, s2);
 }

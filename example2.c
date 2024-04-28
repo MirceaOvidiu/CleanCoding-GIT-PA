@@ -13,7 +13,9 @@ typedef struct Node
 
 typedef struct Graph
 { 
-    int vertices;int *visited;struct Node **adjacency_lists;
+    int vertices;
+    int *visited;
+    struct Node **adjacency_lists;
 }GPH;
 
 /// utils
