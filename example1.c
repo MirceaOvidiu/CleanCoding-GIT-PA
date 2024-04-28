@@ -74,7 +74,6 @@ void DFS(GPH *g, STK *s, int v_nr) {
     NODE *aux = adj_list;
     g->vis[v_nr] = 1;
 
-    printf("%d test", v_nr);
     push(v_nr, s);
     
     while (aux != NULL) {
@@ -87,7 +86,7 @@ void DFS(GPH *g, STK *s, int v_nr) {
         aux = aux->next;
     }
 
-    printf("done\n");
+    
 }
 
 void insert_edges(GPH *g, int edg_nr, int nrv) {
@@ -105,27 +104,34 @@ void wipe(GPH *g, int nrv) {
     }
 }
 
-// 0 sau 1 daca poate fi sau nu
-// ajuns
-void canbe(GPH *g, int nr_vertices, STK *s1, STK *s2, int vertex1, int vertex2) {
+// facem DFS pornind din ambele noduri
+// băgăm toate nodurile vizitate într-un stack
+// apoi ne uităm în stack-ul fiecăruia, ca să vedem dacă îl găsim pe celălalt în nodurile vizitate
+// dacă da, atunci există drum
+void canbe(
+    GPH *g,
+    int nr_vertices,
+    STK *s1,
+    STK *s2,
+    int vertex1,
+    int vertex2
+) {
     int *canbe = calloc(5, sizeof(int));
-    int ans=0;
-    // aici i tine loc de numar adica de
-    // restaurant
-    for (int i = 0; (i < nr_vertices) && !ans ; i++) {
-        for (int j = 0; (j < nr_vertices) && (!ans); j++) {
-            DFS(g, s1, i);
-            wipe(g, nr_vertices);
-            DFS(g, s2, j);
-            for (int k = 0; (j < nr_vertices) && !ans; j++)
-                for (int l = 0; (i < nr_vertices) && !ans; i++)
-                    if ((s1->arr[i] == j) && (s2->arr[j] == i))
-                        ans = 1;
-        }
-    } 
+    int ans = 0;
 
-    if(ans) printf("Da, există drum\n");
-    else printf("Nu, nu există drum\n");
+    
+    DFS(g, s1, vertex1);
+    wipe(g, nr_vertices);
+    DFS(g, s2, vertex2);
+    for (int k = 0; (k <= s1->t) && !ans; k++)
+        for (int l = 0; (l <= s2->t) && !ans; l++)
+            if ((s1->arr[k] == vertex2) && (s2->arr[l] == vertex1))
+                ans = 1;
+
+    if (ans)
+        printf("Da, există drum\n");
+    else
+        printf("Nu, nu există drum\n");
 }
 
 int main() {

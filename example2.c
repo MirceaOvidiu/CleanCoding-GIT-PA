@@ -50,7 +50,7 @@ void add_edge(GPH *graph, int src, int dest) {
     graph->adjacency_lists[dest] = new_node;
 }
 
-int *insedg(int nr_of_vertices, int nr_of_edges, GPH *graph) {
+void insert_nodes(int nr_of_vertices, int nr_of_edges, GPH *graph) {
     int src, dest, i;
     printf("adauga %d muchii (de la 1 la %d)\n", nr_of_edges, nr_of_vertices);
     for (i = 0; i < nr_of_edges; i++) {
@@ -169,7 +169,7 @@ int main() {
     scanf("%d", &nr_of_edges);
     
     GPH *graph = create_graph(nr_of_vertices);
-    insedg(nr_of_vertices, nr_of_edges, graph);
+    insert_nodes(nr_of_vertices, nr_of_edges, graph);
     
     printf("de unde plecam in DFS?");
     scanf("%d", &(starting_vertex));  // =)))
