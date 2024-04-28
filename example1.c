@@ -32,21 +32,23 @@ NODE *create_node(int v) {
 
 void add_edge(GPH *g, int src, int dest) {
     NODE *nn = create_node(dest);
+
     nn->next = g->alst[src];
     g->alst[src] = nn;
+
     nn = create_node(src);
     nn->next = g->alst[dest];
     g->alst[dest] = nn;
 }
 
-GPH *create_graph(int v) {
+GPH *create_graph(int nr_vertices) {
     int i;
     GPH *g = malloc(sizeof(GPH));
-    g->v = v;
-    g->alst = malloc(sizeof(NODE *));
-    g->vis = malloc(sizeof(int) * v);
+    g->v = nr_vertices;
+    g->alst = malloc(nr_vertices* sizeof(NODE *));
+    g->vis = malloc(sizeof(int) * nr_vertices);
 
-    for (int i = 0; i < v; i++) {
+    for (int i = 0; i < nr_vertices; i++) {
         g->alst[i] = NULL;
         g->vis[i] = 0;
     }
@@ -62,9 +64,9 @@ STK *create_stack(int scap) {
     return s;
 }
 
-void push(int pshd, STK *s) {
-    s->t = s->t + 1;
-    s->arr[s->t] = pshd;
+void push(int pshd, STK *stack) {
+    stack->t = stack->t + 1;
+    stack->arr[stack->t] = pshd;
 }
 
 void DFS(GPH *g, STK *s, int v_nr) {
@@ -72,15 +74,20 @@ void DFS(GPH *g, STK *s, int v_nr) {
     NODE *aux = adj_list;
     g->vis[v_nr] = 1;
 
-    printf("%d ", v_nr);
+    printf("%d test", v_nr);
     push(v_nr, s);
     
     while (aux != NULL) {
+        printf("%d\n", aux->data);
         int con_ver = aux->data;
+        
         if (g->vis[con_ver] == 0)
             DFS(g, s, con_ver);
+        
         aux = aux->next;
     }
+
+    printf("done\n");
 }
 
 void insert_edges(GPH *g, int edg_nr, int nrv) {
@@ -100,21 +107,25 @@ void wipe(GPH *g, int nrv) {
 
 // 0 sau 1 daca poate fi sau nu
 // ajuns
-void canbe(GPH *g, int nr_vertices, STK *s1, STK *s2, ) {
+void canbe(GPH *g, int nr_vertices, STK *s1, STK *s2, int vertex1, int vertex2) {
     int *canbe = calloc(5, sizeof(int));
+    int ans=0;
     // aici i tine loc de numar adica de
     // restaurant
-    for (int i = 0; i < nr_vertices; i++) {
-        for (int j = 0; j < 5; j++) {
+    for (int i = 0; (i < nr_vertices) && !ans ; i++) {
+        for (int j = 0; (j < nr_vertices) && (!ans); j++) {
             DFS(g, s1, i);
             wipe(g, nr_vertices);
             DFS(g, s2, j);
-            for (int j = 0; j < nr_vertices && !ans; j++)
-                for (int i = 0; i < nr_vertices && !ans; i++)
+            for (int k = 0; (j < nr_vertices) && !ans; j++)
+                for (int l = 0; (i < nr_vertices) && !ans; i++)
                     if ((s1->arr[i] == j) && (s2->arr[j] == i))
-                        (*canbe) = 1;
+                        ans = 1;
         }
-    }
+    } 
+
+    if(ans) printf("Da, există drum\n");
+    else printf("Nu, nu există drum\n");
 }
 
 int main() {
@@ -126,10 +137,10 @@ int main() {
     int vertex_2;
     int ans;
 
-    printf("cate noduri are girafa?");
+    printf("cate noduri are graful?");
     scanf("%d", &nr_vertices);
 
-    printf("cate muchii are giraful?");
+    printf("cate muchii are graful?");
     scanf("%d", &edg_nr);
 
     GPH *g = create_graph(nr_vertices);
@@ -139,5 +150,7 @@ int main() {
 
     insert_edges(g, edg_nr, nr_vertices);
 
-    canbe(g, nr_vertices, s1, s2);
+    printf("Pentru care două restaurante vreți să aflați existența unui drum?\n");
+    scanf("%d%d", &vertex_1, &vertex_2);
+    canbe(g, nr_vertices, s1, s2, vertex_1, vertex_2);
 }
