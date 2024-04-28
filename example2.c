@@ -190,7 +190,8 @@ int main()
 
 	printf("parcurgere cu DFS: ");
 	DFS(graph, starting_vertex);
-	wipe_visited_list(graph, nr_of_vertices);
+    // hai sa nu uitam ca era indexat de la 1 la nr_of_vertices
+	wipe_visited_list(graph, nr_of_vertices+1);
 	printf("end\n");
 
 	printf("de unde plecam in BFS?");
