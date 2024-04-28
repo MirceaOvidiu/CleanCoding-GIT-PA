@@ -9,178 +9,179 @@ typedef struct Node {
 
 // Structura pentru graful Ã®n sine
 typedef struct Graph {
-    int vertices;
-    int* visited;
-    struct Node** adjacency_lists;
+    int v;
+    int* vis;
+    Node** alst;
 } Graph;
+
+// Structura pentru stivÄƒ
+typedef struct Stack {
+    int t;
+    int scap;
+    int* arr;
+} Stack;
 
 // FuncÈ›ie pentru crearea unui nod
 Node* create_node(int v) {
-    Node* new_node = malloc(sizeof(Node));
-    if (new_node == NULL) {
+    Node* nn = malloc(sizeof(Node));
+    if (nn == NULL) {
         printf("Eroare la alocarea memoriei pentru nod.\n");
         exit(EXIT_FAILURE);
     }
-    new_node->data = v;
-    new_node->next = NULL;
-    return new_node;
+    nn->data = v;
+    nn->next = NULL;
+    return nn;
+}
+
+// FuncÈ›ie pentru adÄƒugarea unei muchii Ã®ntre douÄƒ noduri
+void add_edge(Graph* g, int src, int dest) {
+    Node* nn = create_node(dest);
+    nn->next = g->alst[src];
+    g->alst[src] = nn;
+    nn = create_node(src);
+    nn->next = g->alst[dest];
+    g->alst[dest] = nn;
 }
 
 // FuncÈ›ie pentru crearea grafului
-Graph* create_graph(int vertices) {
-    Graph* graph = malloc(sizeof(Graph));
-    if (graph == NULL) {
+Graph* create_graph(int v) {
+    int i;
+    Graph* g = malloc(sizeof(Graph));
+    if (g == NULL) {
         printf("Eroare la alocarea memoriei pentru graf.\n");
         exit(EXIT_FAILURE);
     }
-    graph->vertices = vertices;
-    graph->adjacency_lists = malloc(vertices * sizeof(Node*));
-    graph->visited = malloc(vertices * sizeof(int));
-    if (graph->adjacency_lists == NULL || graph->visited == NULL) {
+    g->v = v;
+    g->alst = malloc(v * sizeof(Node*));
+    g->vis = malloc(v * sizeof(int));
+    if (g->alst == NULL || g->vis == NULL) {
         printf("Eroare la alocarea memoriei pentru lista de adiacenÈ›Äƒ sau vectorul de vizitare.\n");
         exit(EXIT_FAILURE);
     }
 
-    for (int i = 0; i < vertices; i++) {
-        graph->adjacency_lists[i] = NULL;
-        graph->visited[i] = 0;
+    for (i = 0; i < v; i++) {
+        g->alst[i] = NULL;
+        g->vis[i] = 0;
     }
-    return graph;
+    return g;
 }
 
-// FuncÈ›ie pentru adÄƒugarea unei muchii Ã®ntre douÄƒ noduri
-void add_edge(Graph* graph, int src, int dest) {
-    Node* new_node = create_node(dest);
+// FuncÈ›ie pentru crearea unei stive
+Stack* create_stack(int scap) {
+    Stack* s = malloc(sizeof(Stack));
+    if (s == NULL) {
+        printf("Eroare la alocarea memoriei pentru stivÄƒ.\n");
+        exit(EXIT_FAILURE);
+    }
+    s->arr = malloc(scap * sizeof(int));
+    if (s->arr == NULL) {
+        printf("Eroare la alocarea memoriei pentru vectorul din stivÄƒ.\n");
+        exit(EXIT_FAILURE);
+    }
+    s->t = -1;
+    s->scap = scap;
+    return s;
+}
 
-    new_node->next = graph->adjacency_lists[src];
-    graph->adjacency_lists[src] = new_node;
+// FuncÈ›ie pentru adÄƒugarea unui element Ã®n stivÄƒ
+void push(int pshd, Stack* s) {
+    s->t++;
+    s->arr[s->t] = pshd;
+}
 
-    new_node = create_node(src);
-
-    new_node->next = graph->adjacency_lists[dest];
-    graph->adjacency_lists[dest] = new_node;
+// FuncÈ›ie pentru parcurgerea DFS a grafului
+void DFS(Graph* g, Stack* s, int v_nr) {
+    Node* adj_list = g->alst[v_nr];
+    Node* aux = adj_list;
+    g->vis[v_nr] = 1;
+    printf("%d ", v_nr);
+    push(v_nr, s);
+    while (aux != NULL) {
+        int con_ver = aux->data;
+        if (g->vis[con_ver] == 0)
+            DFS(g, s, con_ver);
+        aux = aux->next;
+    }
 }
 
 // FuncÈ›ie pentru introducerea muchiilor Ã®n graf
-void insert_edges(int nr_of_vertices, int nr_of_edges, Graph* graph) {
-    int src, dest;
-    printf("Adauga %d muchii (de la 1 la %d)\n", nr_of_edges, nr_of_vertices);
-    for (int i = 0; i < nr_of_edges; i++) {
+void insert_edges(Graph* g, int edg_nr, int nrv) {
+    int src, dest, i;
+    printf("Adauga %d muchii (de la 1 la %d)\n", edg_nr, nrv);
+    for (i = 0; i < edg_nr; i++) {
         scanf("%d %d", &src, &dest);
-        add_edge(graph, src, dest);
-    }
-}
-
-// FuncÈ›ie pentru verificarea dacÄƒ o coadÄƒ este goalÄƒ
-int is_empty(Node* queue) {
-    return queue == NULL;
-}
-
-// FuncÈ›ie pentru adÄƒugarea unui element Ã®n coadÄƒ
-void enqueue(Node** queue, int data) {
-    Node* new_node = create_node(data);
-
-    if (is_empty(*queue)) {
-        *queue = new_node;
-    } else {
-        Node* temp = *queue;
-        while (temp->next) {
-            temp = temp->next;
-        }
-        temp->next = new_node;
-    }
-}
-
-// FuncÈ›ie pentru eliminarea unui element din coadÄƒ È™i returnarea sa
-int dequeue(Node** queue) {
-    int data = (*queue)->data;
-    Node* temp = *queue;
-    *queue = (*queue)->next;
-    free(temp);
-    return data;
-}
-
-// FuncÈ›ie pentru parcurgerea grafului folosind DFS
-void DFS(Graph* graph, int vertex) {
-    Node* adj_list = graph->adjacency_lists[vertex];
-    Node* temp = adj_list;
-
-    graph->visited[vertex] = 1;
-    printf("%d->", vertex);
-
-    while (temp != NULL) {
-        int connected_vertex = temp->data;
-
-        if (graph->visited[connected_vertex] == 0) {
-            DFS(graph, connected_vertex);
-        }
-        temp = temp->next;
-    }
-}
-
-// FuncÈ›ie pentru parcurgerea grafului folosind BFS
-void BFS(Graph* graph, int start) {
-    Node* queue = NULL;
-
-    graph->visited[start] = 1;
-    enqueue(&queue, start);
-
-    while (!is_empty(queue)) {
-        int current = dequeue(&queue);
-        printf("%d ", current);
-
-        Node* temp = graph->adjacency_lists[current];
-        while (temp) {
-            int adj_vertex = temp->data;
-            if (graph->visited[adj_vertex] == 0) {
-                graph->visited[adj_vertex] = 1;
-                enqueue(&queue, adj_vertex);
-            }
-            temp = temp->next;
-        }
+        add_edge(g, src, dest);
     }
 }
 
 // FuncÈ›ie pentru iniÈ›ializarea vectorului de vizitare cu 0
-void wipe_visited_list(Graph* graph) {
-    for (int i = 0; i < graph->vertices; i++) {
-        graph->visited[i] = 0;
+void wipe(Graph* g, int nrv) {
+    for (int i = 0; i < nrv; i++) {
+        g->vis[i] = 0;
+    }
+}
+
+// FuncÈ›ie pentru verificarea echivalenÈ›ei a douÄƒ aranjamente
+void can_be(Graph* g, int nrv, Stack* s1, Stack* s2) {
+    int i;
+    int ans = 1; // Presupunem cÄƒ aranjamentele sunt echivalente pÃ¢nÄƒ cÃ¢nd gÄƒsim o contradicÈ›ie
+    if (s1->t != s2->t) {
+        ans = 0; // NumÄƒrul de elemente din stive este diferit, deci aranjamentele nu pot fi echivalente
+    } else {
+        for (i = 0; i <= s1->t && ans; i++) {
+            if (s1->arr[i] != s2->arr[i]) {
+                ans = 0; // Am gÄƒsit o contradicÈ›ie Ã®ntre elementele din stive, deci aranjamentele nu pot fi echivalente
+            }
+        }
+    }
+
+    if (ans) {
+        printf("Cele douÄƒ aranjamente sunt echivalente.\n");
+    } else {
+        printf("Cele douÄƒ aranjamente nu sunt echivalente.\n");
     }
 }
 
 int main() {
-    int nr_of_vertices, nr_of_edges, starting_vertex;
+    int nrv, edg_nr;
+
     printf("Cate noduri are graful? ");
-    scanf("%d", &nr_of_vertices);
+    scanf("%d", &nrv);
+
     printf("Cate muchii are graful? ");
-    scanf("%d", &nr_of_edges);
+    scanf("%d", &edg_nr);
 
-    Graph* graph = create_graph(nr_of_vertices);
-    insert_edges(nr_of_vertices, nr_of_edges, graph);
+    // Crearea grafului
+    Graph* g = create_graph(nrv);
 
-    printf("De unde plecam in DFS? ");
-    scanf("%d", &starting_vertex);
-    printf("Parcurgere cu DFS: ");
-    DFS(graph, starting_vertex);
-    wipe_visited_list(graph);
+    // Crearea stivelor pentru parcurgerea DFS
+    Stack* s1 = create_stack(2 * nrv);
+    Stack* s2 = create_stack(2 * nrv);
 
-    printf("\nDe unde plecam in BFS? ");
-    scanf("%d", &starting_vertex);
-    printf("Parcurgere cu BFS: ");
-    BFS(graph, starting_vertex);
+    // Introducerea muchiilor Ã®n graf
+    insert_edges(g, edg_nr, nrv);
+
+    // AfiÈ™area parcurgerii DFS a grafului
+    printf("Parcurgerea DFS a grafului este: ");
+    DFS(g, s1, 0); // Parcurgerea Ã®ncepe de la nodul 0, poÈ›i alege alt nod dacÄƒ doreÈ™ti
+    printf("\n");
+
+    // Testarea funcÈ›ionalitÄƒÈ›ii de verificare a echivalenÈ›ei a douÄƒ aranjamente
+    char choice;
+    printf("Doresti sa testezi functionalitatea de verificare a echivalentei a doua aranjamente? (y/n): ");
+    scanf(" %c", &choice);
+    if (choice == 'y' || choice == 'Y') {
+        can_be(g, nrv, s1, s2);
+    }
 
     // Eliberarea memoriei
-    for (int i = 0; i < graph->vertices; i++) {
-        Node* temp = graph->adjacency_lists[i];
-        while (temp != NULL) {
-            Node* del = temp;
-            temp = temp->next;
-            free(del);
-        }
-    }
-    free(graph->adjacency_lists);
-    free(graph->visited);
-    free(graph);
+    free(g->vis);
+    free(g->alst);
+    free(g);
+    free(s1->arr);
+    free(s1);
+    free(s2->arr);
+    free(s2);
 
     return 0;
 }
