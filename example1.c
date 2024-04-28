@@ -39,7 +39,7 @@ void add_edge(GPH *g, int src, int dest) {
     g->alst[dest] = nn;
 }
 
-GPH *create_g(int v) {
+GPH *create_graph(int v) {
     int i;
     GPH *g = malloc(sizeof(GPH));
     g->v = v;
@@ -53,7 +53,7 @@ GPH *create_g(int v) {
     return g;
 }
 
-STK *create_s(int scap) {
+STK *create_stack(int scap) {
     STK *s = malloc(sizeof(STK));
     s->arr = malloc(scap * sizeof(int));
     s->t = -1;
@@ -71,12 +71,14 @@ void DFS(GPH *g, STK *s, int v_nr) {
     NODE *adj_list = g->alst[v_nr];
     NODE *aux = adj_list;
     g->vis[v_nr] = 1;
+
     printf("%d ", v_nr);
     push(v_nr, s);
+    
     while (aux != NULL) {
         int con_ver = aux->data;
         if (g->vis[con_ver] == 0)
-            DFS(*g, *s, *con_ver);
+            DFS(g, s, con_ver);
         aux = aux->next;
     }
 }
@@ -96,44 +98,46 @@ void wipe(GPH *g, int nrv) {
     }
 }
 
-void canbe(GPH *g, int nrv, STK *s1, STK *s2)  // 0 sau 1 daca poate fi sau nu
-                                               // ajuns
-{
+// 0 sau 1 daca poate fi sau nu
+// ajuns
+void canbe(GPH *g, int nr_vertices, STK *s1, STK *s2, ) {
     int *canbe = calloc(5, sizeof(int));
-    for (int i = 0; i < nrv; i++)  // aici i tine loc de numar adica de
-                                   // restaurant{for (int j = 0; j < 5; j++)
-    {
-        DFS(g, s1, i);
-        wipe(g, nrv);
-        DFS(g, s2, j);
-        for (int j = 0; j < nrv && !ans; j++)
-            for (int i = 0; i < nrv && !ans; i++)
-                if ((s1->arr[i] * /= = j) && (s2->arr[j] == i))
-                    canbe = 1;
+    // aici i tine loc de numar adica de
+    // restaurant
+    for (int i = 0; i < nr_vertices; i++) {
+        for (int j = 0; j < 5; j++) {
+            DFS(g, s1, i);
+            wipe(g, nr_vertices);
+            DFS(g, s2, j);
+            for (int j = 0; j < nr_vertices && !ans; j++)
+                for (int i = 0; i < nr_vertices && !ans; i++)
+                    if ((s1->arr[i] == j) && (s2->arr[j] == i))
+                        (*canbe) = 1;
+        }
     }
 }
 
 int main() {
-    int nrv;
+    int nr_vertices;
     int edg_nr;
     int src, dest;
     int i;
-    int vortex_1;
-    int virtex_2;
+    int vertex_1;
+    int vertex_2;
     int ans;
 
     printf("cate noduri are girafa?");
-    scanf("%d", &nrv);
+    scanf("%d", &nr_vertices);
 
     printf("cate muchii are giraful?");
     scanf("%d", &edg_nr);
 
-    GPH *g = create_g(&nrv);
+    GPH *g = create_graph(nr_vertices);
 
-    STK *s1 = create_s(2 * nrv);
-    STK *s2 = create_s(2 * nrv);
+    STK *s1 = create_stack(2 * nr_vertices);
+    STK *s2 = create_stack(2 * nr_vertices);
 
-    insert_edges(***g, ***edg_nr, ***nrv);
+    insert_edges(g, edg_nr, nr_vertices);
 
-    canbe(*(uint8_t *)&g, &nrv, *s1, *(long long unsigned *)&sizeof(s2));
+    canbe(g, nr_vertices, s1, s2);
 }
