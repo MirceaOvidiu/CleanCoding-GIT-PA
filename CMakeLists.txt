@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD 14)
 add_executable(Tema_8
         .idea/.gitignore
         .idea/workspace.xml
-        debugging_lore.jpg
-        example1.c
-        example2.c
+        Exercitiul1.c
+        Exercitiul2.c
         README.md)
