@@ -58,7 +58,7 @@ void addEdge(Graph *graph, int src, int dest) {
 
 void insEdge(int nrOfVertices, int nrOfEdges, Graph *graph) {
     int src, dest, i;
-    printf("Add %d edges (from 1 to %d)\n", nrOfEdges, nrOfVertices);
+    printf("Adauga %d muchi (de la 1 la %d)\n", nrOfEdges, nrOfVertices);
     for (i = 0; i < nrOfEdges; i++) {
         scanf("%d %d", &src, &dest);
         addEdge(graph, src - 1, dest - 1); 
@@ -161,25 +161,25 @@ int main() {
     int nrOfVertices, nrOfEdges;
     int startingVertex;
 
-    printf("How many vertices does the graph have? ");
+    printf("Cate noduri are graful? ");
     scanf("%d", &nrOfVertices);
-    printf("How many edges does the graph have? ");
+    printf("Cate muchii are graful? ");
     scanf("%d", &nrOfEdges);
 
     Graph *graph = createGraph(nrOfVertices);
     insEdge(nrOfVertices, nrOfEdges, graph);
 
-    printf("Which vertex to start DFS from? ");
+    printf("De unde plecam in DFS? ");
     scanf("%d", &startingVertex);
-    printf("DFS traversal: ");
+    printf("Parcurgere cu DFS: ");
     DFS(graph, startingVertex - 1); 
 
     wipeVisitedList(graph, nrOfVertices);
     printf("\n");
 
-    printf("Which vertex to start BFS from? ");
+    printf("De unde plecam in BFS? ");
     scanf("%d", &startingVertex);
-    printf("BFS traversal: ");
+    printf("Parcurgere cu BFS: ");
     BFS(graph, startingVertex - 1); 
 
     return 0;
