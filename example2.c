@@ -99,7 +99,7 @@ int dequeue(NODE **queue)
     NODE *temp = *queue;
     *queue = (*queue)->next;
     free(temp);
-    
+
     return data;
 }
 
@@ -134,7 +134,7 @@ void DFS(GPH *graph, int vertex_nr)
     NODE *adj_list = graph->adjacency_lists[vertex_nr];
     NODE *temp = adj_list;
     graph->visited[vertex_nr] = 1;
-    printf("%d->", vertex_nr);
+    printf("%d ", vertex_nr);
 
     while (temp != NULL)
     {
@@ -174,26 +174,26 @@ void BFS(GPH *graph, int start)
 int main()
 {
     int nr_of_vertices, nr_of_edges, starting_vertex;
-  
-    printf("Cate noduri are graful?");
+
+    printf("\nCate noduri are graful?");
     scanf("%d", &nr_of_vertices);
-    printf("Cate muchii are graful?");
+    printf("\nCate muchii are graful?");
     scanf("%d", &nr_of_edges);
 
     GPH *graph = create_graph(nr_of_vertices);
     insedg(nr_of_edges, graph);
 
-    printf("De unde plecam in DFS?");
+    printf("\nDe unde plecam in DFS?");
     scanf("%d", &starting_vertex);
-    printf("Parcurgere cu DFS:");
+    printf("\nParcurgere cu DFS:");
     DFS(graph, starting_vertex);
 
     wipe_visited_list(graph, nr_of_vertices);
     printf("\n");
 
-    printf("De unde plecam in BFS?");
+    printf("\nDe unde plecam in BFS?");
     scanf("%d", &starting_vertex);
-    printf("Parcurgere cu BFS:");
+    printf("\nParcurgere cu BFS:");
     BFS(graph, starting_vertex);
 
     return 0;
